@@ -1,37 +1,63 @@
-# cloud-build-badge
+# cloud-build-badge 
 
-Add cloud build badges in 2 minutes.
+Automate the creation of [Google Cloud
+Build](https://cloud.google.com/cloud-build/) badges for your project! Cloud
+builds in the Google Cloud Platform are fun, but unlike Travis, Circle-CI, and
+AppVeyor, it doesn't provide badges out-of-the-box. This small script aims to
+provide a solution.
 
-1) Create a cloud storage bucket ([tutorial here](https://cloud.google.com/storage/docs/creating-buckets)).
-2) Create a folder in the bucket named `build`.
-3) Download [failure](https://storage.googleapis.com/tensortask-static/build/failure.svg) and [success](https://storage.googleapis.com/tensortask-static/build/success.svg) badges (follow links and save).
-4) Upload both badges to the google storage bucket/folder created in the previous step (e.g. `YOUR_BUCKET/build/success.svg`).
-5) Create a placeholder for your badge (e.g. `YOUR_BUCKET/build/BADGE_ID.svg` (make permissions public).
-6) Set ENV Variables.
+*(This is a fork of
+[sbsends/cloud-build-badge](https://github.com/sbsends/cloud-build-badge) that
+solves the same problem using `sed` commands and environment variables.  My aim
+is to provide a more "JS-native" solution)*
 
-```bash
-export REPO="YOUR_REPO" // e.g. github-sbsends-cloud-build-badge
-export BRANCH="YOUR_BRANCH" // e.g. master
-export BUCKET="YOUR_BUCKET" // e.g. my-gcp-bucket
-export BADGE="PATH_TO_PUBLIC_BADGE" // e.g. cbb-master-badge
+## Setup
+
+The first three steps ensure that we have the required badges in our project's
+cloud storage. The last step simply install this package in your system.
+
+1. Ensure that you have the [Google Cloud SDK](https://cloud.google.com/sdk/)
+   installed in your system.
+2. In your project, create a Google Cloud Storage bucket (referred to as
+   `${BUCKET}`), and make a folder named `build`.
+3. Inside `build/`, save an SVG copy of the SUCCESS and FAILURE badges. You can
+   create your own [here](https://shields.io/#/), or you can just copy and save
+   from here
+   ([success](https://storage.googleapis.com/tm-github-builds/build/success.svg),
+   [failure](https://storage.googleapis.com/tm-github-builds/build/failure.svg)).
+4. Install `cloud-build-badge` via `npm`:
+
+```shell
+$ npm install --global cloud-build-badge
 ```
 
-7) Clone this repository into any directory.
+## Deploy
 
-`git clone https://github.com/sbsends/cloud-build-badge.git`
+It only takes three steps to start deploying your cloud badges! First we create
+the deploy script, then we call `gcloud functions` to send it over to GCP, then
+we put the resulting badge in our project's README
 
-`cd cloud-build-badge`
+1. Run `cloud-build-badge` and supply the following arguments:
 
-8) Use regular expressions to alter the index.js file (the cloud function).
-
-`sed -i.tmp -e "s/\${repo}/$REPO/" -e "s/\${branch}/$BRANCH/" -e "s/\${bucket}/$BUCKET/" -e "s/\${badge}/$BADGE/" index.js && rm index.js.tmp`
-
-9) Deploy the cloud function as the badge name and set the function trigger to the cloud-builds pubsub topic.
-
-`gcloud functions deploy $BADGE --runtime nodejs6 --trigger-resource cloud-builds --trigger-event google.pubsub.topic.publish`
-
-10) Add badge to README.md
 ```
-# README.md
-[![cloud build status](https://storage.googleapis.com/<BUCKET>/build/<BADGE>.svg)](https://github.com/sbsends/cloud-build-badge)
+--id            deploy function unique ID
+--repository    target repository name
+--branches      target branches, e.g. master, development
+--bucket        name of bucket, e.g. ${BUCKET}
 ```
+
+For example, 
+
+```shell
+cloud-build-badge \
+    --id myFunction \
+    --repository my-repository \
+    --branches master development \ # You can supply multiple values
+    --bucket my-project-bucket
+```
+
+[![asciicast](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z.svg)](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z)
+
+2. Copy the resulting command to deploy via  `gcloud functions`
+3. Put the resulting badge on to your README! You'd find it saved
+   inside your project's GCS bucket!
