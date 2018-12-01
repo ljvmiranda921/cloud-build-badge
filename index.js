@@ -1,38 +1,81 @@
+#!/usr/bin/env node
+const fs = require("fs");
+const pify = require("pify");
+const writeFile = pify(fs.writeFile);
+const chalk = require("chalk");
+const { renderString, renderTemplateFile } = require("template-file");
+
 /**
- * gcloud functions deploy <FUNC_NAME> --runtime nodejs6 --trigger-resource cloud-builds --trigger-event google.pubsub.topic.publish
- * @param {object} event The Cloud Functions event.
- * @param {function} callback The callback function.
+ * Build command-line arguments
  */
-const { Storage } = require('@google-cloud/storage');
+const argv = require("yargs")
+  .options("id", {
+    alias: "i",
+    describe: "deploy function unique ID",
+    demand: "function ID must be specified",
+    type: "string"
+  })
+  .options("repository", {
+    alias: "r",
+    describe: "target repository",
+    demand: "target repository must be specified",
+    type: "string"
+  })
+  .options("branches", {
+    alias: "b",
+    describe: "target branches",
+    demand: "a branch or list of branches must be specified",
+    type: "array"
+  })
+  .options("bucket", {
+    alias: "k",
+    describe: "bucket to source and store badges",
+    demand: "bucket must be specified",
+    type: "string"
+  })
+  .options("verbose", {
+    alias: "v",
+    default: false
+  })
+  .help().argv;
 
-exports.${badge} = (event, callback) => {
-  const pubsubMessage = event.data;
-  if  (pubsubMessage.data) {
-    buildResource = JSON.parse(Buffer.from(pubsubMessage.data, 'base64').toString())
-    if (buildResource.source.repoSource.repoName && buildResource.source.repoSource.branchName && buildResource.status) {
-      repo = buildResource.source.repoSource.repoName === "${repo}";
-      branch = buildResource.source.repoSource.branchName === "${branch}";
-      status = buildResource.status;
-
-      const storage = new Storage();
-      if (repo && branch && status == "SUCCESS") {
-        storage.bucket("${bucket}")
-        .file("build/success.svg")
-        .copy(storage.bucket("${bucket}")
-        .file("build/${badge}.svg"));
-        console.log("switched badge to build success")
-      }
-      if (repo && branch && status == "FAILURE") {
-        storage.bucket("${bucket}")
-        .file("build/failure.svg")
-        .copy(storage.bucket("${bucket}")
-        .file("build/${badge}.svg"));
-        console.log("switched badge to build failure")
-      }
-    }
-  }
-  callback();
+/**
+ * Setup data for template
+ */
+const data = {
+  id: argv.id,
+  repository: argv.repository,
+  branch: "'" + argv.branches.join("','") + "'",
+  bucket: argv.bucket
 };
 
+/**
+ * Render template and save to file
+ */
 
+function renderFile(renderedString, filename) {
+  writeFile(filename, renderedString);
+  return renderedString;
+}
 
+function printVerbose(renderedString, verbosity) {
+  if (verbosity) {
+    console.log(renderedString);
+  }
+}
+
+console.log(chalk.yellow("Creating a deploy function from template"));
+renderTemplateFile("build-template", data)
+  .then(renderedString => renderFile(renderedString, "cloud_build_deploy.js"))
+  .then(renderedString => printVerbose(renderedString, argv.verbose));
+
+var deployFcn = "deployBadge_" + argv.id;
+
+console.log(
+  chalk.green(
+    "Deploy script has been created. Run the command below to deploy:"
+  ),
+  chalk.bold(
+    `\n\n gcloud functions deploy ${deployFcn} --runtime nodejs6 --trigger-resource cloud-builds --trigger-event google.pubsub.topic.publish\n\n`
+  )
+);
