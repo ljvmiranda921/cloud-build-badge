@@ -1,15 +1,22 @@
 {
-  "name": "cloudbuildbadge",
+  "name": "cloud-build-badge",
   "version": "1.0.0",
-  "description": "A cloud function that changes GitHub badges depending on Cloud Build status.",
-  "main": "index.js",
-  "dependencies": {
-    "@google-cloud/storage": "^2.3.1"
+  "description": "A cloud function that changes GitHub badges depending on Cloud Build status. Forked from sbsends/cloud-build-badge",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ljvmiranda921/cloud-build-badge"
   },
-  "devDependencies": {},
+  "author": "Lj Miranda",
+  "email": "ljvmiranda@gmail.com",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "@google-cloud/storage": "^2.3.1"
+  },
+  "devDependencies": {
+    "prettier": "1.15.3"
+  }
 }
