@@ -1,8 +1,13 @@
 {
   "name": "cloud-build-badge",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A cloud function that changes GitHub badges depending on Cloud Build status. Forked from sbsends/cloud-build-badge",
-  "keywords": ["google cloud platform", "google", "cloud functions", "cloud"],
+  "keywords": [
+    "google cloud platform",
+    "google",
+    "cloud functions",
+    "cloud"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
