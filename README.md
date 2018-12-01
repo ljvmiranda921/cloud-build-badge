@@ -1,5 +1,8 @@
 # cloud-build-badge 
 
+[![npm version](https://badge.fury.io/js/cloud-build-badge.svg)](https://badge.fury.io/js/cloud-build-badge)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 Automate the creation of [Google Cloud
 Build](https://cloud.google.com/cloud-build/) badges for your project! Cloud
 builds in the Google Cloud Platform are fun, but unlike Travis, Circle-CI, and
