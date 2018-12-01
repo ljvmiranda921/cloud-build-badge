@@ -65,7 +65,10 @@ function printVerbose(renderedString, verbosity) {
 }
 
 console.log(chalk.yellow("Creating a deploy function from template"));
-renderTemplateFile("build-template", data)
+renderTemplateFile(
+  "./node_modules/cloud-build-badge/templates/template-github",
+  data
+)
   .then(renderedString => renderFile(renderedString, "cloud_build_deploy.js"))
   .then(renderedString => printVerbose(renderedString, argv.verbose));
 
