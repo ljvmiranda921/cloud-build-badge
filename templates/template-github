@@ -5,7 +5,14 @@ const options = {
     role: "READER"
 };
 
-exports.deployBadge_{{ id }} = (event, callback) => {
+/**
+ * Auto-generated from cloud-build-badge. To deploy this cloud function, execute
+ * the following command:
+ *  gcloud functions deploy {{ id }} --runtime nodejs6 --trigger-resource cloud-builds --trigger-event google.pubsub.topic.publish
+ * @param {object} event Google Cloud Functions event
+ * @param {function} callback callback function for handling events
+ */
+exports.{{ id }} = (event, callback) => {
   const pubsubMessage = event.data;
   if  (pubsubMessage.data) {
     buildResource = JSON.parse(
