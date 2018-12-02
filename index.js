@@ -33,6 +33,12 @@ const argv = require("yargs")
     demand: "bucket must be specified",
     type: "string"
   })
+  .options("output", {
+    alias: "o",
+    describe: "name of output JS file",
+    type: "string",
+    default: "cloud_build_deploy.js"
+  })
   .options("verbose", {
     alias: "v",
     default: false
@@ -53,8 +59,23 @@ const data = {
  * Render template and save to file
  */
 
+function deploySuccessMsg() {
+  console.log(
+    chalk.green(
+      "Deploy script has been created. Run the command below to deploy:"
+    ),
+    chalk.bold(
+      `\n\n gcloud functions deploy ${argv.id} \\
+    --runtime nodejs6 \\
+    --trigger-resource cloud-builds \\
+    --trigger-event google.pubsub.topic.publish\n\n`
+    )
+  );
+}
+
 function renderFile(renderedString, filename) {
   writeFile(filename, renderedString);
+  deploySuccessMsg();
   return renderedString;
 }
 
@@ -69,16 +90,5 @@ renderTemplateFile(
   "./node_modules/cloud-build-badge/templates/template-github",
   data
 )
-  .then(renderedString => renderFile(renderedString, "cloud_build_deploy.js"))
+  .then(renderedString => renderFile(renderedString, argv.output))
   .then(renderedString => printVerbose(renderedString, argv.verbose));
-
-var deployFcn = "deployBadge_" + argv.id;
-
-console.log(
-  chalk.green(
-    "Deploy script has been created. Run the command below to deploy:"
-  ),
-  chalk.bold(
-    `\n\n gcloud functions deploy ${deployFcn} --runtime nodejs6 --trigger-resource cloud-builds --trigger-event google.pubsub.topic.publish\n\n`
-  )
-);
