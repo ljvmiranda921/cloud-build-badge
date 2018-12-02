@@ -31,7 +31,7 @@ cloud storage. The last step simply install this package in your system.
 4. Install `cloud-build-badge` via `npm`:
 
 ```shell
-$ npm install --global cloud-build-badge
+$ npm install cloud-build-badge
 ```
 
 ## Deploy
@@ -61,6 +61,24 @@ cloud-build-badge \
 
 [![asciicast](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z.svg)](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z)
 
-2. Copy the resulting command to deploy via  `gcloud functions`
-3. Put the resulting badge on to your README! You'd find it saved
-   inside your project's GCS bucket!
+This will generate a JS file (default is `cloud_build_deploy.js`) that
+contains the deploy function that we'll need. 
+
+2. Copy the resulting command to deploy via  `gcloud functions`. As
+   reference, here's what it looks like:
+
+```shell
+gcloud functions deploy <ID> \
+    --runtime nodejs6 \
+    --trigger-resource cloud-builds \
+    --trigger-event google.pubsub.topic.publish
+```
+
+3. You'll find the resulting badge saved inside your project's GCS bucket! You
+   can then use it for your README's badge! This badge, through Cloud
+   Functions, will change depending on the status of your latest build.
+
+```
+[![cloud build status](https://storage.googleapis.com/<BUCKET>/build/<REPOSITORY>-<BADGE>.svg)](https://github.com/ljvmiranda921/cloud-build-badge)
+```
+
