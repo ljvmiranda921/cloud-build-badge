@@ -3,6 +3,7 @@ const fs = require("fs");
 const pify = require("pify");
 const writeFile = pify(fs.writeFile);
 const chalk = require("chalk");
+const path = require("path");
 const { renderString, renderTemplateFile } = require("template-file");
 
 /**
@@ -87,7 +88,7 @@ function printVerbose(renderedString, verbosity) {
 
 console.log(chalk.yellow("Creating a deploy function from template"));
 renderTemplateFile(
-  "./node_modules/cloud-build-badge/templates/template-github",
+  path.resolve(__dirname, "./templates/template-github"),
   data
 )
   .then(renderedString => renderFile(renderedString, argv.output))
