@@ -34,12 +34,6 @@ const argv = require("yargs")
     demand: "bucket must be specified",
     type: "string"
   })
-  .options("output", {
-    alias: "o",
-    describe: "name of output JS file",
-    type: "string",
-    default: "cloud_build_deploy.js"
-  })
   .options("verbose", {
     alias: "v",
     default: false
@@ -91,5 +85,5 @@ renderTemplateFile(
   path.resolve(__dirname, "./templates/template-github"),
   data
 )
-  .then(renderedString => renderFile(renderedString, argv.output))
+  .then(renderedString => renderFile(renderedString, "function.js"))
   .then(renderedString => printVerbose(renderedString, argv.verbose));
