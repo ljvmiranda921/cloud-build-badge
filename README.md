@@ -14,6 +14,8 @@ provide a solution.
 solves the same problem using `sed` commands and environment variables.  My aim
 is to provide a more "JS-native" solution)*
 
+I also wrote a blog post tutorial for creating Cloud Build badges. Read it [here](https://ljvmiranda921.github.io/notebook/2018/12/21/cloud-build-badge/)
+
 ## Setup
 
 The first three steps ensure that we have the required badges in our project's
@@ -61,7 +63,7 @@ cloud-build-badge \
 
 [![asciicast](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z.svg)](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z)
 
-This will generate a JS file (default is `cloud_build_deploy.js`) that
+This will generate a JS file (default is `function.js`) that
 contains the deploy function that we'll need. 
 
 2. Copy the resulting command to deploy via  `gcloud functions`. As
