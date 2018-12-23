@@ -1,10 +1,5 @@
 const { Storage } = require('@google-cloud/storage');
 
-const options = {
-    entity: "allUsers",
-    role: "READER"
-};
-
 /**
  * Auto-generated from cloud-build-badge. To deploy this cloud function, execute
  * the following command:
@@ -19,48 +14,37 @@ const options = {
 exports.{{ id }} = (event, callback) => {
   const pubsubMessage = event.data;
   if  (pubsubMessage.data) {
-    buildResource = JSON.parse(
-      Buffer.from(pubsubMessage.data, 'base64').toString()
-    );
-    if (
-      buildResource.source.repoSource.repoName && 
-      buildResource.source.repoSource.branchName && 
-      buildResource.status
-    ) {
-      repo = buildResource.source.substitutions.REPO_NAME === "{{ repository }}";
-      branch = buildResource.substitutions.BRANCH_NAME;
-      status = buildResource.status;
+    buildResource = JSON.parse(Buffer.from(pubsubMessage.data, 'base64').toString());
+    // Get repository data
+    repo = buildResource.substitutions.REPO_NAME === "{{ repository }}";
+    repoName = buildResource.substitutions.REPO_NAME;
+    branch = buildResource.substitutions.BRANCH_NAME;
+    status = buildResource.status;
 
-      if ([{{ branch }}].includes(branch)) {
-          console.log("Creating badge for %s on branch %s", repo, branch);
-          const filename = "build/{{ repository }}-" + branch + ".svg"
-          const storage = new Storage();
-
-          if (repo && branch && status == "SUCCESS") {
-            storage
-              .bucket("{{ bucket }}")
-              .file("build/success.svg")
-              .copy(
-                storage
-                  .bucket("{{ bucket }}")
-                  .file(filename)
-                  .acl.add(options)
-              );
-            console.log("Switched badge to build success")
-          }
-          if (repo && branch && status == "FAILURE") {
-            storage
-              .bucket("{{ bucket }}")
-              .file("build/failure.svg")
-              .copy(
-                storage
-                  .bucket("{{ bucket }}")
-                  .file(filename)
-                  .acl.add(options)
-              );
-            console.log("Switched badge to build failure")
-          }
+    if ([{{ branch }}].includes(branch)) {
+        console.log("Creating badge for %s on branch %s", repoName, branch);
+        const filename = "build/{{ repository }}-" + branch + ".svg"
+        const storage = new Storage();
+        // Apply some logic depending on status
+        if (repo && branch && status == "SUCCESS") {
+          storage
+            .bucket("{{ bucket }}")
+            .file("build/success.svg")
+            .copy(storage.bucket("{{ bucket }}").file(filename));
+          console.log("Switched badge to build success")
         }
+        if (repo && branch && status == "FAILURE") {
+          storage
+            .bucket("{{ bucket }}")
+            .file("build/failure.svg")
+            .copy(storage.bucket("{{ bucket }}").file(filename));
+          console.log("Switched badge to build failure")
+        }
+        // Set newly-created object to public
+        storage
+          .bucket("{{ bucket }}")
+          .file(filename)
+          .makePublic(function(err, apiResponse) {});
       }
     }
    callback();
