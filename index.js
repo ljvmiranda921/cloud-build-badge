@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const fs = require("fs");
-const pify = require("pify");
-const writeFile = pify(fs.writeFile);
+
 const chalk = require("chalk");
 const path = require("path");
 const { renderString, renderTemplateFile } = require("template-file");
+
+var utils = require("./utils");
 
 /**
  * Build command-line arguments
@@ -53,37 +53,7 @@ const data = {
 /**
  * Render template and save to file
  */
-
-function deploySuccessMsg() {
-  console.log(
-    chalk.green(
-      "Deploy script has been created. Run the command below to deploy:"
-    ),
-    chalk.bold(
-      `\n\n gcloud functions deploy ${argv.id} \\
-    --runtime nodejs6 \\
-    --trigger-resource cloud-builds \\
-    --trigger-event google.pubsub.topic.publish\n\n`
-    )
-  );
-}
-
-function renderFile(renderedString, filename) {
-  writeFile(filename, renderedString);
-  deploySuccessMsg();
-  return renderedString;
-}
-
-function printVerbose(renderedString, verbosity) {
-  if (verbosity) {
-    console.log(renderedString);
-  }
-}
-
 console.log(chalk.yellow("Creating a deploy function from template"));
-renderTemplateFile(
-  path.resolve(__dirname, "./templates/template-github"),
-  data
-)
-  .then(renderedString => renderFile(renderedString, "function.js"))
-  .then(renderedString => printVerbose(renderedString, argv.verbose));
+renderTemplateFile(path.resolve(__dirname, "./templates/template-github"), data)
+  .then(renderedString => utils.renderFile(renderedString, "function.js", argv.id))
+  .then(renderedString => utils.printVerbose(renderedString, argv.verbose));
