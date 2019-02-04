@@ -61,8 +61,6 @@ cloud-build-badge \
     --bucket my-project-bucket
 ```
 
-[![asciicast](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z.svg)](https://asciinema.org/a/IGo1BsfeYPSWMp9ufIhYu8a1Z)
-
 This will generate a JS file (default is `function.js`) that
 contains the deploy function that we'll need. 
 
