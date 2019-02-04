@@ -8,8 +8,10 @@ var utils = require("./utils");
 
 // Build command-line arguments
 const argv = require("yargs")
-.usage("Create a deployable Cloud Function by providing arguments to the parameters below")
-.options("id", {
+  .usage(
+    "Create a deployable Cloud Function by providing arguments to the parameters below"
+  )
+  .options("id", {
     alias: "i",
     describe: "Deploy function unique ID",
     demand: "Function ID must be specified",
@@ -37,7 +39,9 @@ const argv = require("yargs")
     alias: "v",
     default: false
   })
-  .epilogue("For more information, please visit: https://github.com/ljvmiranda921/cloud-build-badge")
+  .epilogue(
+    "For more information, please visit: https://github.com/ljvmiranda921/cloud-build-badge"
+  )
   .help().argv;
 
 // Setup data for template
